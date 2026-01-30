@@ -13,7 +13,7 @@ public class BookingResponseDTO {
     private String bookingCode;
     private String movieCode;
     private Long showId;
-    private List<String> seatNumbers;
+    private List<Long> showSeatsIds;
     private String currency;
     private Double totalAmount;
     private BookingStatus bookingStatus;

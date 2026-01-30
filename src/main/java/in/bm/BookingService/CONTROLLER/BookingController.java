@@ -6,11 +6,7 @@ import in.bm.BookingService.SERVICE.BookingService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestHeader;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/booking")
@@ -19,8 +15,12 @@ public class BookingController {
 
     private BookingService bookingService;
 
-    public ResponseEntity<BookingResponseDTO> addBooking(@Valid
-                                                      @RequestBody BookingRequestDTO requestDTO, @RequestHeader("x-user-id")String userId){
-        return ResponseEntity.status(HttpStatus.CREATED).body(bookingService.addBooking(requestDTO,userId));
+
+    @PostMapping
+    @ResponseStatus(HttpStatus.CREATED)
+    public BookingResponseDTO createBooking(@Valid BookingRequestDTO dto ,@RequestHeader("x-user-id")String userId){
+        return bookingService.addBooking(dto,userId);
     }
+
+
 }

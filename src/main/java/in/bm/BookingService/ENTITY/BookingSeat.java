@@ -7,29 +7,26 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+@Entity
+@Table(
+        name = "booking_seats",
+        uniqueConstraints = @UniqueConstraint(columnNames = "show_seat_id")
+)
 @Getter
 @Setter
-@AllArgsConstructor
 @NoArgsConstructor
-@Entity
-@Table(name = "booking_seats",
-        uniqueConstraints = @UniqueConstraint
-                (columnNames = {"showId","seatNumber"}))
+@AllArgsConstructor
 public class BookingSeat {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne
-    @JoinColumn(name = "booking_id",referencedColumnName = "bookingCode")
+    @ManyToOne(optional = false)
+    @JoinColumn(name = "booking_code", referencedColumnName = "bookingCode")
     @JsonIgnore
     private Booking booking;
 
-    @Column(nullable = false)
-    private Long showId;
-
-    @Column(nullable = false)
-    private String seatNumber;
-
+    @Column(name = "show_seat_id", nullable = false)
+    private Long showSeatId;
 }

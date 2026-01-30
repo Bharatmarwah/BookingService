@@ -6,10 +6,12 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
 
+import java.time.Instant;
+import java.util.List;
 
-import java.util.Currency;
-import java.util.UUID;
 
 @Getter
 @Setter
@@ -38,7 +40,17 @@ public class Booking {
     @Column(nullable = false)
     private String currency;
 
-    @OneToMany
-    private BookingSeat bookingSeat;
+    @Column(nullable = false)
+    @CreationTimestamp
+    private Instant createdAt;
+
+    @UpdateTimestamp
+    private Instant updatedAt;
+
+    @OneToMany(
+    mappedBy = "booking",
+    cascade = CascadeType.ALL,
+    orphanRemoval = true)
+    private List<BookingSeat> bookingSeat;
 
 }
