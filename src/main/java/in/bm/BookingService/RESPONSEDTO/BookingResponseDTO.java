@@ -15,7 +15,10 @@ public class BookingResponseDTO {
     private Long showId;
     private List<Long> showSeatsIds;
     private String currency;
-    private Double totalAmount;
+    private double baseAmount;
+    private double convenienceFee;
+    private double gstAmount;
+    private double totalAmount;
     private BookingStatus bookingStatus;
 
 
