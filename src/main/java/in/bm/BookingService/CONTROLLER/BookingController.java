@@ -1,6 +1,6 @@
 package in.bm.BookingService.CONTROLLER;
 
-import in.bm.BookingService.REQUESTDTO.BookingRequestDTO;
+import in.bm.BookingService.REQUESTDTO.InternalShowRequestDTO;
 import in.bm.BookingService.RESPONSEDTO.BookingResponseDTO;
 import in.bm.BookingService.SERVICE.BookingService;
 import jakarta.validation.Valid;
@@ -13,14 +13,15 @@ import org.springframework.web.bind.annotation.*;
 @RequiredArgsConstructor
 public class BookingController {
 
-    private BookingService bookingService;
+    private final BookingService bookingService;
 
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public BookingResponseDTO createBooking(@Valid BookingRequestDTO dto ,@RequestHeader("x-user-id")String userId){
-        return bookingService.addBooking(dto,userId);
+    public BookingResponseDTO createBooking(@RequestBody InternalShowRequestDTO dto ){
+        return bookingService.addBooking(dto);
     }
-
-
+    //todo correct the showSeatId prize
+    // todo correct order the add booking response
+    // todo complete webclient
 }

@@ -12,12 +12,9 @@ import java.util.List;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class BookingRequestDTO {
-
+public class InternalShowRequestDTO {
     @NotNull
     private Long showId;
-
     @NotNull
-    private List<Long> showSeatsIds;
-
+    private List<Long> showSeatIds;
 }
