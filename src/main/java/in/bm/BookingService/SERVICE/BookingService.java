@@ -25,8 +25,9 @@ public class BookingService {
     private final BookingRepo bookingRepo;
     private final BookingSeatRepo bookingSeatRepo;
 
+    // per show will have new showSeats
     @Transactional
-    public BookingResponseDTO addBooking(InternalShowRequestDTO dto) {
+    public BookingResponseDTO addBooking(InternalShowRequestDTO dto, String userId) {
 
         InternalShowResponse showResponse = movieClient.validateShow(dto);
 
@@ -36,7 +37,7 @@ public class BookingService {
 
         Booking booking = new Booking();
         booking.setBookingCode(generateBookingCode());
-        booking.setUserID("userid2323");
+        booking.setUserID(userId);
         booking.setShowId(showResponse.getShowId());
         booking.setBookingStatus(BookingStatus.RESERVED);
         booking.setCurrency("INR");
@@ -56,15 +57,15 @@ public class BookingService {
 
         return BookingResponseDTO.builder()
                 .bookingCode(booking.getBookingCode())
-                .bookingStatus(booking.getBookingStatus())
                 .movieCode(showResponse.getMovieCode())
-                .showId(showResponse.getShowId())
-                .showSeatsIds(new ArrayList<>(showResponse.getShowSeatsIds()))
+                .showId(booking.getShowId())
+                .showSeatsIds(showResponse.getShowSeatsIds())
+                .currency(booking.getCurrency())
                 .baseAmount(showResponse.getBaseAmount())
                 .convenienceFee(showResponse.getConvenienceFee())
                 .gstAmount(showResponse.getGstAmount())
-                .totalAmount(booking.getTotalAmount())
-                .currency(booking.getCurrency())
+                .totalAmount(showResponse.getTotalAmount())
+                .bookingStatus(booking.getBookingStatus())
                 .build();
     }
 
