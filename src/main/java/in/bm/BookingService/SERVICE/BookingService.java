@@ -4,6 +4,8 @@ import in.bm.BookingService.CLIENT.MovieClient;
 import in.bm.BookingService.ENTITY.Booking;
 import in.bm.BookingService.ENTITY.BookingSeat;
 import in.bm.BookingService.ENTITY.BookingStatus;
+import in.bm.BookingService.EXCEPTION.BookingNotFoundException;
+import in.bm.BookingService.EXCEPTION.SeatAlreadyBookedException;
 import in.bm.BookingService.REPOSITORY.BookingRepo;
 import in.bm.BookingService.REPOSITORY.BookingSeatRepo;
 import in.bm.BookingService.REQUESTDTO.InternalShowRequestDTO;
@@ -28,6 +30,10 @@ public class BookingService {
     // per show will have new showSeats
     @Transactional
     public BookingResponseDTO addBooking(InternalShowRequestDTO dto, String userId) {
+
+        if (bookingSeatRepo.existsByShowSeatIdIn(dto.getShowSeatIds())){
+            throw new SeatAlreadyBookedException("Seat already booked");
+        }
 
         InternalShowResponse showResponse = movieClient.validateShow(dto);
 
@@ -71,5 +77,15 @@ public class BookingService {
 
     private String generateBookingCode() {
         return "BK" + UUID.randomUUID().toString().substring(0, 8).toUpperCase();
+    }
+
+    @Transactional
+    public void cancelBooking(String bookingCode) {
+       Booking booking = bookingRepo
+               .findById(bookingCode)
+               .orElseThrow(()->
+                       new BookingNotFoundException("Booking not found"));
+
+       bookingRepo.delete(booking);
     }
 }

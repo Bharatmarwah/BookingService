@@ -10,6 +10,7 @@ import org.springframework.web.reactive.function.client.WebClient;
 @Component
 @RequiredArgsConstructor
 public class MovieClient {
+
     private final WebClient.Builder webClientBuilder;
 
     public InternalShowResponse validateShow(InternalShowRequestDTO dto) {
@@ -20,6 +21,7 @@ public class MovieClient {
                 .bodyValue(dto)
                 .retrieve()
                 .bodyToMono(InternalShowResponse.class)
-                .onErrorMap(e -> new RuntimeException("Show validation failed: " + e.getMessage(), e)).block();
+                .onErrorMap(e -> new RuntimeException("Show validation failed: " + e.getMessage(), e))
+                .block();
     }
 }
