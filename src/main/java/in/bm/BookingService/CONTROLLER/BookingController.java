@@ -8,7 +8,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/booking")
+@RequestMapping("/bookings")
 @RequiredArgsConstructor
 public class BookingController {
 
@@ -20,5 +20,11 @@ public class BookingController {
     public BookingResponseDTO createBooking(@RequestBody InternalShowRequestDTO dto, @RequestHeader("x-user-id")String userId){
         return bookingService.addBooking(dto,userId);
     }
-    // todo complete webclient
+
+    @DeleteMapping("/{bookingCode}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void cancelBooking(@PathVariable String bookingCode){
+        bookingService.cancelBooking(bookingCode);
+    }
+
 }
