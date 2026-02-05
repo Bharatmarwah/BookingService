@@ -3,6 +3,7 @@ package in.bm.BookingService.SERVICE;
 import in.bm.BookingService.CLIENT.MovieClient;
 import in.bm.BookingService.ENTITY.Booking;
 import in.bm.BookingService.ENTITY.BookingSeat;
+import in.bm.BookingService.ENTITY.BookingSeatStatus;
 import in.bm.BookingService.ENTITY.BookingStatus;
 import in.bm.BookingService.EXCEPTION.BookingNotFoundException;
 import in.bm.BookingService.EXCEPTION.SeatAlreadyBookedException;
@@ -27,12 +28,16 @@ public class BookingService {
     private final BookingRepo bookingRepo;
     private final BookingSeatRepo bookingSeatRepo;
 
-    // per show will have new showSeats
+
     @Transactional
     public BookingResponseDTO addBooking(InternalShowRequestDTO dto, String userId) {
 
-        if (bookingSeatRepo.existsByShowSeatIdIn(dto.getShowSeatIds())){
-            throw new SeatAlreadyBookedException("Seat already booked");
+        boolean seatAlreadyTaken = bookingSeatRepo
+                .existsByShowSeatIdInAndBookingSeatStatusNot
+                        (dto.getShowSeatIds(), BookingSeatStatus.AVAILABLE);
+
+        if (seatAlreadyTaken){
+            throw new SeatAlreadyBookedException("One or more seats already booked");
         }
 
         InternalShowResponse showResponse = movieClient.validateShow(dto);
@@ -56,6 +61,7 @@ public class BookingService {
             BookingSeat bs = new BookingSeat();
             bs.setBooking(booking);
             bs.setShowSeatId(showSeatId);
+            bs.setBookingSeatStatus(BookingSeatStatus.LOCKED);
             bookingSeats.add(bs);
         }
 
@@ -86,6 +92,6 @@ public class BookingService {
                .orElseThrow(()->
                        new BookingNotFoundException("Booking not found"));
 
-       bookingRepo.delete(booking);
+       booking.setBookingStatus(BookingStatus.CANCELLED);
     }
 }

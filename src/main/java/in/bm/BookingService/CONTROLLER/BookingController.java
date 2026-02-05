@@ -21,6 +21,7 @@ public class BookingController {
         return bookingService.addBooking(dto,userId);
     }
 
+    // todo :-> update cancel avoiding hard delete
     @DeleteMapping("/{bookingCode}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void cancelBooking(@PathVariable String bookingCode){

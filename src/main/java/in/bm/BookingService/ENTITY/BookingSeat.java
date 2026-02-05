@@ -29,4 +29,8 @@ public class BookingSeat {
 
     @Column(name = "show_seat_id", nullable = false)
     private Long showSeatId;
+
+    @Column(nullable = false)
+    @Enumerated(EnumType.STRING)
+    private BookingSeatStatus bookingSeatStatus;
 }
