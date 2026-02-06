@@ -100,6 +100,17 @@ public class BookingService {
                .orElseThrow(()->
                        new BookingNotFoundException("Booking not found"));
 
+       List<BookingSeat> bookingSeats = bookingSeatRepo.findByBooking(booking);
+
+        if (booking.getBookingStatus() != BookingStatus.PENDING_PAYMENT) {
+            throw new SeatAlreadyBookedException("Cannot cancel confirmed booking");
+        }
+
+       for (BookingSeat bs : bookingSeats){
+           bs.setBookingSeatStatus(BookingSeatStatus.CANCELLED);
+           bs.setLockExpiry(null);
+           bookingSeatRepo.save(bs);
+       }
        booking.setBookingStatus(BookingStatus.CANCELLED);
     }
 }
