@@ -46,6 +46,14 @@ public class BookingService {
             throw new IllegalStateException("Show validation failed");
         }
 
+        boolean conflict = bookingSeatRepo.
+                existsActiveSeat(showResponse.getShowSeatsIds()
+                        ,LocalDateTime.now());
+
+        if (conflict){
+            throw new SeatAlreadyBookedException("Seat already locked or booked");
+        }
+
         Booking booking = new Booking();
         booking.setBookingCode(generateBookingCode());
         booking.setUserID(userId);
