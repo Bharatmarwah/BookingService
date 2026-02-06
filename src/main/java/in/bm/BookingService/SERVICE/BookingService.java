@@ -13,13 +13,17 @@ import in.bm.BookingService.REQUESTDTO.InternalShowRequestDTO;
 import in.bm.BookingService.RESPONSEDTO.BookingResponseDTO;
 import in.bm.BookingService.RESPONSEDTO.InternalShowResponse;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class BookingService {
@@ -31,14 +35,6 @@ public class BookingService {
 
     @Transactional
     public BookingResponseDTO addBooking(InternalShowRequestDTO dto, String userId) {
-
-        boolean seatAlreadyTaken = bookingSeatRepo
-                .existsByShowSeatIdInAndBookingSeatStatusNot
-                        (dto.getShowSeatIds(), BookingSeatStatus.AVAILABLE);
-
-        if (seatAlreadyTaken){
-            throw new SeatAlreadyBookedException("One or more seats already booked");
-        }
 
         InternalShowResponse showResponse = movieClient.validateShow(dto);
 
@@ -58,7 +54,7 @@ public class BookingService {
         booking.setBookingCode(generateBookingCode());
         booking.setUserID(userId);
         booking.setShowId(showResponse.getShowId());
-        booking.setBookingStatus(BookingStatus.RESERVED);
+        booking.setBookingStatus(BookingStatus.PENDING_PAYMENT);
         booking.setCurrency("INR");
         booking.setTotalAmount(showResponse.getTotalAmount());
 
@@ -70,6 +66,7 @@ public class BookingService {
             bs.setBooking(booking);
             bs.setShowSeatId(showSeatId);
             bs.setBookingSeatStatus(BookingSeatStatus.LOCKED);
+            bs.setLockExpiry(LocalDateTime.now().plusMinutes(5));
             bookingSeats.add(bs);
         }
 
@@ -112,5 +109,27 @@ public class BookingService {
            bookingSeatRepo.save(bs);
        }
        booking.setBookingStatus(BookingStatus.CANCELLED);
+
+       bookingRepo.save(booking);
+    }
+
+    @Scheduled(fixedRate = 120000)
+    @Transactional
+    public void releaseExpiredSeatLock(){
+
+        log.info("starts");
+        LocalDateTime now = LocalDateTime.now();
+        List<BookingSeat> expiredSeats = bookingSeatRepo.findExpiredLockedSeats(now);
+
+        for (BookingSeat seat : expiredSeats) {
+            seat.setBookingSeatStatus(BookingSeatStatus.CANCELLED);
+            seat.setLockExpiry(null);
+
+            Booking booking = seat.getBooking();
+            if (booking.getBookingStatus() == BookingStatus.PENDING_PAYMENT) {
+                booking.setBookingStatus(BookingStatus.CANCELLED);
+            }
+        }
+
     }
 }

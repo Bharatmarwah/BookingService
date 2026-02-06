@@ -1,7 +1,7 @@
 package in.bm.BookingService.ENTITY;
 
 public enum BookingSeatStatus {
-    AVAILABLE,
+    LOCKED,
     BOOKED,
-    LOCKED
+    CANCELLED
 }

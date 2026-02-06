@@ -1,15 +1,11 @@
 package in.bm.BookingService.ENTITY;
 
 public enum BookingStatus {
-    RESERVED,    // seats locked, awaiting payment
-    CONFIRMED,   // payment successful
-    CANCELLED,   // user/admin cancelled
-    EXPIRED,     // payment timeout / auto-release
-    FAILED       // payment failed
+    PENDING_PAYMENT, // booking created, seats locked
+    CONFIRMED,       // payment success, seats booked
+    CANCELLED,       // user cancel / expiry
+    FAILED           // payment gateway failure
 }
-
-
-
 
 
 

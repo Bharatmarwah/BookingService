@@ -7,11 +7,10 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.time.LocalDateTime;
+
 @Entity
-@Table(
-        name = "booking_seats",
-        uniqueConstraints = @UniqueConstraint(columnNames = "show_seat_id")
-)
+@Table(name = "booking_seats")
 @Getter
 @Setter
 @NoArgsConstructor
@@ -23,7 +22,7 @@ public class BookingSeat {
     private Long id;
 
     @ManyToOne(optional = false)
-    @JoinColumn(name = "booking_code", referencedColumnName = "bookingCode")
+    @JoinColumn(name = "booking_code", nullable = false)
     @JsonIgnore
     private Booking booking;
 
@@ -33,4 +32,7 @@ public class BookingSeat {
     @Column(nullable = false)
     @Enumerated(EnumType.STRING)
     private BookingSeatStatus bookingSeatStatus;
+
+    @Column(name = "lock_expiry")
+    private LocalDateTime lockExpiry;
 }
